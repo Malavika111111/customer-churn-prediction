@@ -42,6 +42,7 @@ def get_user_input():
     night_charge = st.number_input('Night Charge', min_value=0.0, max_value=100.0)
     customer_calls = st.number_input('Customer Calls', min_value=0, max_value=500)
 
+    # Create a DataFrame with user inputs
     user_input = pd.DataFrame({
         'state': [state],
         'area.code': [area_code],
@@ -64,18 +65,19 @@ def get_user_input():
         'customer.calls': [customer_calls]
     })
     
-    # Ensure all the columns match with the model's input features
-    missing_cols = set(training_columns) - set(user_input.columns)
-    for col in missing_cols:
-        user_input[col] = 0  # Add missing columns with 0s to match the model input
-
-    # Reorder columns to match the model training order
+    # Re-order columns to match the training columns
     user_input = user_input[training_columns]
+
+    # Handle missing columns by adding them with 0 values if needed
+    for col in training_columns:
+        if col not in user_input.columns:
+            user_input[col] = 0
 
     # Apply the same scaler used for training
     user_input = scaler.transform(user_input)  # Transform the input with the scaler
     
     return user_input
+
 
 # Streamlit app UI
 st.title("Customer Churn Prediction")
