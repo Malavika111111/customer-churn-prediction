@@ -64,9 +64,22 @@ def get_user_input():
         'night.charge': [night_charge],
         'customer.calls': [customer_calls]
     })
-    
+
+    # Debugging: Print out the columns of user_input and training_columns
+    st.write("User input columns:", user_input.columns)
+    st.write("Training columns:", training_columns)
+
+    # Check if all training columns exist in user_input
+    missing_columns = [col for col in training_columns if col not in user_input.columns]
+    if missing_columns:
+        st.write(f"Missing columns: {missing_columns}")
+
     # Re-order columns to match the training columns
-    user_input = user_input[training_columns]
+    try:
+        user_input = user_input[training_columns]
+    except KeyError as e:
+        st.write(f"Error: {e}")
+        return None
 
     # Handle missing columns by adding them with 0 values if needed
     for col in training_columns:
@@ -75,9 +88,7 @@ def get_user_input():
 
     # Apply the same scaler used for training
     user_input = scaler.transform(user_input)  # Transform the input with the scaler
-    
     return user_input
-
 
 # Streamlit app UI
 st.title("Customer Churn Prediction")
