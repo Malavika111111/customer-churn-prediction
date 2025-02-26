@@ -70,16 +70,29 @@ def get_user_input():
     user_input['intl.plan'] = user_input['intl.plan'].map({"Yes": 1, "No": 0})
     user_input = pd.get_dummies(user_input, columns=['state', 'area.code'], drop_first=True)
 
-    # Re-order columns to match the training columns
+    # Debugging: Show user input columns and training columns
+    st.write("User input columns:", user_input.columns)
+    st.write("Training columns:", training_columns)
+
+    # Check if the user input columns match the training columns
     missing_columns = [col for col in training_columns if col not in user_input.columns]
-    for col in missing_columns:
-        user_input[col] = 0  # Add missing columns with default values (0)
-    
+    if missing_columns:
+        st.write(f"Missing columns: {missing_columns}")
+
+    # Add missing columns if necessary
+    for col in training_columns:
+        if col not in user_input.columns:
+            user_input[col] = 0  # Add missing columns with default values (0)
+
     user_input = user_input[training_columns]
 
     # Apply the same scaler used for training
-    user_input = scaler.transform(user_input)  # Transform the input with the scaler
-    return user_input
+    try:
+        user_input_scaled = scaler.transform(user_input)  # Transform the input with the scaler
+        return user_input_scaled
+    except ValueError as e:
+        st.write(f"Error during scaling: {e}")
+        return None
 
 # Streamlit app UI
 st.title("Customer Churn Prediction")
@@ -96,3 +109,6 @@ if user_input is not None:
     else:
         st.write("The customer is not likely to churn.")
 
+   
+  
+  
