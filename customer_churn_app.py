@@ -70,6 +70,9 @@ def get_user_input():
     user_input['intl.plan'] = user_input['intl.plan'].map({"Yes": 1, "No": 0})
     user_input = pd.get_dummies(user_input, columns=['state', 'area.code'], drop_first=True)
 
+    # Remove unnecessary columns like 'Unnamed: 0' if they exist
+    user_input = user_input.loc[:, ~user_input.columns.str.contains('^Unnamed')]
+
     # Debugging: Show user input columns and training columns
     st.write("User input columns:", user_input.columns)
     st.write("Training columns:", training_columns)
@@ -108,7 +111,3 @@ if user_input is not None:
         st.write("The customer is likely to churn.")
     else:
         st.write("The customer is not likely to churn.")
-
-   
-  
-  
