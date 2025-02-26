@@ -65,26 +65,17 @@ def get_user_input():
         'customer.calls': [customer_calls]
     })
 
-    # Debugging: Print out the columns of user_input and training_columns
-    st.write("User input columns:", user_input.columns)
-    st.write("Training columns:", training_columns)
-
-    # Check if all training columns exist in user_input
-    missing_columns = [col for col in training_columns if col not in user_input.columns]
-    if missing_columns:
-        st.write(f"Missing columns: {missing_columns}")
+    # Apply the same transformations (binary encoding, one-hot encoding) as done during training
+    user_input['voice.plan'] = user_input['voice.plan'].map({"Yes": 1, "No": 0})
+    user_input['intl.plan'] = user_input['intl.plan'].map({"Yes": 1, "No": 0})
+    user_input = pd.get_dummies(user_input, columns=['state', 'area.code'], drop_first=True)
 
     # Re-order columns to match the training columns
-    try:
-        user_input = user_input[training_columns]
-    except KeyError as e:
-        st.write(f"Error: {e}")
-        return None
-
-    # Handle missing columns by adding them with 0 values if needed
-    for col in training_columns:
-        if col not in user_input.columns:
-            user_input[col] = 0
+    missing_columns = [col for col in training_columns if col not in user_input.columns]
+    for col in missing_columns:
+        user_input[col] = 0  # Add missing columns with default values (0)
+    
+    user_input = user_input[training_columns]
 
     # Apply the same scaler used for training
     user_input = scaler.transform(user_input)  # Transform the input with the scaler
@@ -98,9 +89,10 @@ user_input = get_user_input()
 if user_input is not None:
     # Predict the churn probability
     prediction = rf_model.predict(user_input)
-    
+
     # Display the prediction result
-    if prediction == 1:
+    if prediction[0] == 1:
         st.write("The customer is likely to churn.")
     else:
         st.write("The customer is not likely to churn.")
+
