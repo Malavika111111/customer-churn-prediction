@@ -22,25 +22,33 @@ training_columns = df.drop(columns=['churn']).columns
 
 # Function to get user input
 def get_user_input():
-    state = st.selectbox('State', ['CA', 'NY', 'TX', 'FL'])  # Example states
-    area_code = st.number_input('Area Code', min_value=100, max_value=999, step=1, value=408)
-    account_length = st.number_input('Account Length', min_value=1, max_value=500, value=100)
+    states = ['CA', 'NY', 'TX', 'FL', 'OH', 'MI', 'NJ', 'WA', 'VA']  # Example states
+    area_codes = [408, 415, 510, 650, 708]  # Example area codes
+
+    state = st.selectbox('State', states)
+    area_code = st.selectbox('Area Code', area_codes)
+
+    account_length = st.select_slider('Account Length', options=range(1, 501), value=100)
     voice_plan = st.selectbox('Voice Plan', ['Yes', 'No'])
-    voice_messages = st.number_input('Voice Messages', min_value=0, max_value=500, value=10)
+    voice_messages = st.select_slider('Voice Messages', options=range(0, 501), value=10)
     intl_plan = st.selectbox('International Plan', ['Yes', 'No'])
-    intl_mins = st.number_input('International Minutes', min_value=0, max_value=500, value=20)
-    intl_calls = st.number_input('International Calls', min_value=0, max_value=100, value=5)
-    intl_charge = st.number_input('International Charge', min_value=0.0, max_value=100.0, value=2.5)
-    day_mins = st.number_input('Day Minutes', min_value=0, max_value=500, value=180)
-    day_calls = st.number_input('Day Calls', min_value=0, max_value=100, value=40)
-    day_charge = st.number_input('Day Charge', min_value=0.0, max_value=100.0, value=20.5)
-    eve_mins = st.number_input('Evening Minutes', min_value=0, max_value=500, value=200)
-    eve_calls = st.number_input('Evening Calls', min_value=0, max_value=100, value=50)
-    eve_charge = st.number_input('Evening Charge', min_value=0.0, max_value=100.0, value=18.7)
-    night_mins = st.number_input('Night Minutes', min_value=0, max_value=500, value=250)
-    night_calls = st.number_input('Night Calls', min_value=0, max_value=100, value=60)
-    night_charge = st.number_input('Night Charge', min_value=0.0, max_value=100.0, value=15.2)
-    customer_calls = st.number_input('Customer Calls', min_value=0, max_value=500, value=3)
+    intl_mins = st.select_slider('International Minutes', options=range(0, 501), value=20)
+    intl_calls = st.select_slider('International Calls', options=range(0, 101), value=5)
+    intl_charge = st.select_slider('International Charge', options=[round(i * 0.1, 1) for i in range(0, 1001)], value=2.5)
+
+    day_mins = st.select_slider('Day Minutes', options=range(0, 501), value=180)
+    day_calls = st.select_slider('Day Calls', options=range(0, 101), value=40)
+    day_charge = st.select_slider('Day Charge', options=[round(i * 0.1, 1) for i in range(0, 1001)], value=20.5)
+
+    eve_mins = st.select_slider('Evening Minutes', options=range(0, 501), value=200)
+    eve_calls = st.select_slider('Evening Calls', options=range(0, 101), value=50)
+    eve_charge = st.select_slider('Evening Charge', options=[round(i * 0.1, 1) for i in range(0, 1001)], value=18.7)
+
+    night_mins = st.select_slider('Night Minutes', options=range(0, 501), value=250)
+    night_calls = st.select_slider('Night Calls', options=range(0, 101), value=60)
+    night_charge = st.select_slider('Night Charge', options=[round(i * 0.1, 1) for i in range(0, 1001)], value=15.2)
+
+    customer_calls = st.select_slider('Customer Calls', options=range(0, 501), value=3)
 
     # Convert user input into DataFrame
     user_input = pd.DataFrame({
@@ -78,6 +86,7 @@ def get_user_input():
 
     # Convert DataFrame to NumPy array for scaling
     user_input_scaled = scaler.transform(user_input)
+
     return user_input_scaled
 
 # Streamlit UI
@@ -90,4 +99,3 @@ if prediction == 1:
     st.write("The customer is **likely to churn**. 🚨")
 else:
     st.write("The customer is **not likely to churn**. ✅")
-
