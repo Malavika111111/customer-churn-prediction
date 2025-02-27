@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import joblib  # Load trained model
@@ -7,18 +8,18 @@ import numpy as np
 rf_model = joblib.load("random_forest.pkl")  
 scaler = joblib.load("scaler0.pkl")
 
-# Load dataset to get training feature names
+# Load dataset to get training feature names (ensure index column is not included)
 df = pd.read_excel("Churn (1) (2).xlsx")
 
 # Drop unnecessary columns like 'Unnamed: 0' (if exists)
 if 'Unnamed: 0' in df.columns:
     df = df.drop(columns=['Unnamed: 0'])
-    
+
 # One-Hot Encoding (same as training)
 df = pd.get_dummies(df, columns=['state', 'area.code'], drop_first=True)
 
 # Store feature names used in training
-training_columns = df.drop(columns=['churn']).columns.tolist()
+training_columns = df.drop(columns=['churn']).columns
 
 # Function to get user input
 def get_user_input():
@@ -69,12 +70,12 @@ def get_user_input():
     user_input = pd.get_dummies(user_input, columns=['state', 'area.code'], drop_first=True)
 
     # Add missing columns (if any)
-    for col in training_columns:
-        if col not in user_input.columns:
-            user_input[col] = 0  # Fill missing feature columns with 0
+    missing_cols = set(training_columns) - set(user_input.columns)
+    for col in missing_cols:
+        user_input[col] = 0  # Add missing feature columns with 0
 
     # Ensure column order matches training data
-    user_input = user_input[training_columns]
+    user_input = user_input.reindex(columns=training_columns, fill_value=0)
 
     # Convert DataFrame to NumPy array for scaling
     user_input_scaled = scaler.transform(user_input)
@@ -82,15 +83,12 @@ def get_user_input():
 
 # Streamlit UI
 st.title("Customer Churn Prediction")
+user_input_scaled = get_user_input()
 
-try:
-    user_input_scaled = get_user_input()
+# Predict and display result
+prediction = int(rf_model.predict(user_input_scaled)[0])
+if prediction == 1:
+    st.write("The customer is **likely to churn**. 🚨")
+else:
+    st.write("The customer is **not likely to churn**. ✅")
 
-    # Predict and display result
-    prediction = int(rf_model.predict(user_input_scaled)[0])
-    if prediction == 1:
-        st.write("The customer is **likely to churn**. 🚨")
-    else:
-        st.write("The customer is **not likely to churn**. ✅")
-except Exception as e:
-    st.error(f"An error occurred: {str(e)}")
