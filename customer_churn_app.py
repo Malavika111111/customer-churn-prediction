@@ -3,7 +3,7 @@ import pandas as pd
 import joblib  # To load the trained model
 
 # Load the trained model and scaler
-rf_model = joblib.load("random_forest.pkl")  # Ensure the correct model name
+rf_model = joblib.load("random_forest.pkl")  
 scaler = joblib.load("scaler0.pkl")
 
 # Load the training data to get feature names
