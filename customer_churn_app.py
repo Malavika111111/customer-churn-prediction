@@ -14,7 +14,7 @@ df = pd.read_excel("Churn (1) (2).xlsx")
 df = pd.get_dummies(df, columns=['state', 'area.code'], drop_first=True)
 
 # Store feature names used in training
-training_columns = df.drop(columns=['churn']).columns
+training_columns = df.drop(columns=['churn']).columns.tolist()
 
 # Function to get user input
 def get_user_input():
@@ -65,30 +65,28 @@ def get_user_input():
     user_input = pd.get_dummies(user_input, columns=['state', 'area.code'], drop_first=True)
 
     # Add missing columns (if any)
-    missing_cols = set(training_columns) - set(user_input.columns)
-    for col in missing_cols:
-        user_input[col] = 0  # Add missing feature columns with 0
+    for col in training_columns:
+        if col not in user_input.columns:
+            user_input[col] = 0  # Fill missing feature columns with 0
 
-    # Reorder columns to match training data
+    # Ensure column order matches training data
     user_input = user_input[training_columns]
 
-    # Debugging: Print column mismatch
-    st.write("Expected Columns:", list(training_columns))
-    st.write("User Input Columns:", list(user_input.columns))
-    st.write("Missing Columns:", missing_cols)
-
     # Convert DataFrame to NumPy array for scaling
-    user_input_scaled = scaler.transform(user_input.values)
-
+    user_input_scaled = scaler.transform(user_input)
     return user_input_scaled
 
 # Streamlit UI
 st.title("Customer Churn Prediction")
-user_input_scaled = get_user_input()
 
-# Predict and display result
-prediction = int(rf_model.predict(user_input_scaled)[0])
-if prediction == 1:
-    st.write("The customer is **likely to churn**. 🚨")
-else:
-    st.write("The customer is **not likely to churn**. ✅")
+try:
+    user_input_scaled = get_user_input()
+
+    # Predict and display result
+    prediction = int(rf_model.predict(user_input_scaled)[0])
+    if prediction == 1:
+        st.write("The customer is **likely to churn**. 🚨")
+    else:
+        st.write("The customer is **not likely to churn**. ✅")
+except Exception as e:
+    st.error(f"An error occurred: {str(e)}")
