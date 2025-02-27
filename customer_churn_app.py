@@ -10,6 +10,10 @@ scaler = joblib.load("scaler0.pkl")
 # Load dataset to get training feature names
 df = pd.read_excel("Churn (1) (2).xlsx")
 
+# Drop unnecessary columns like 'Unnamed: 0' (if exists)
+if 'Unnamed: 0' in df.columns:
+    df = df.drop(columns=['Unnamed: 0'])
+    
 # One-Hot Encoding (same as training)
 df = pd.get_dummies(df, columns=['state', 'area.code'], drop_first=True)
 
