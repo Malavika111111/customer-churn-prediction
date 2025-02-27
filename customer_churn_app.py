@@ -22,34 +22,19 @@ training_columns = df.drop(columns=['churn']).columns
 
 # Function to get user input
 def get_user_input():
-    states = ['CA', 'NY', 'TX', 'FL', 'OH', 'MI', 'NJ', 'WA', 'VA']  # Example states
-    area_codes = [408, 415, 510, 650, 708]  # Example area codes
-
-    state = st.selectbox('State', states)
-    area_code = st.selectbox('Area Code', area_codes)
-
-    account_length = st.selectbox('Account Length', list(range(1, 501)), index=99)
-    voice_plan = st.selectbox('Voice Plan', ['Yes', 'No'])
-    voice_messages = st.selectbox('Voice Messages', list(range(0, 501)), index=10)
-    intl_plan = st.selectbox('International Plan', ['Yes', 'No'])
-    intl_mins = st.selectbox('International Minutes', list(range(0, 501)), index=20)
-    intl_calls = st.selectbox('International Calls', list(range(0, 101)), index=5)
-    intl_charge = st.selectbox('International Charge', [round(i * 0.1, 1) for i in range(0, 1001)], index=25)
-
-    day_mins = st.selectbox('Day Minutes', list(range(0, 501)), index=180)
-    day_calls = st.selectbox('Day Calls', list(range(0, 101)), index=40)
-    day_charge = st.selectbox('Day Charge', [round(i * 0.1, 1) for i in range(0, 1001)], index=205)
-
-    eve_mins = st.selectbox('Evening Minutes', list(range(0, 501)), index=200)
-    eve_calls = st.selectbox('Evening Calls', list(range(0, 101)), index=50)
-    eve_charge = st.selectbox('Evening Charge', [round(i * 0.1, 1) for i in range(0, 1001)], index=187)
-
-    night_mins = st.selectbox('Night Minutes', list(range(0, 501)), index=250)
-    night_calls = st.selectbox('Night Calls', list(range(0, 101)), index=60)
-    night_charge = st.selectbox('Night Charge', [round(i * 0.1, 1) for i in range(0, 1001)], index=152)
-
-    customer_calls = st.selectbox('Customer Calls', list(range(0, 501)), index=3)
-
+    st.sidebar.header("Customer Information")
+    
+    account_length = st.sidebar.slider("Account Length (days)", 0, 365, 100)
+    voice_plan = st.sidebar.selectbox("Has Voice Plan?", ["No", "Yes"])
+    intl_plan = st.sidebar.selectbox("Has International Plan?", ["No", "Yes"])
+    intl_mins = st.sidebar.slider("International Minutes", 0.0, 60.0, 15.0)
+    intl_calls = st.sidebar.slider("International Calls", 0, 20, 5)
+    intl_charge = intl_mins * 0.5  # Example: Charge calculation
+    day_mins = st.sidebar.slider("Day Minutes", 0.0, 400.0, 150.0)
+    day_calls = st.sidebar.slider("Day Calls", 0, 200, 100)
+    day_charge = day_mins * 0.25  # Example charge formula
+    customer_calls = st.sidebar.slider("Customer Service Calls", 0, 10, 2)
+    
     # Convert user input into DataFrame
     user_input = pd.DataFrame({
         'state': [state],
