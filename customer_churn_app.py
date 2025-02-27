@@ -26,7 +26,7 @@ def get_user_input():
     intl_plan = st.selectbox('International Plan', ['Yes', 'No'])
     intl_mins = st.number_input('International Minutes', min_value=0, max_value=500, value=20)
     intl_calls = st.number_input('International Calls', min_value=0, max_value=100, value=5)
-    intl_charge = st.number_input('International Charge', min_value=0, max_value=100, value=2.5)
+    intl_charge = st.number_input('International Charge', min_value=0.0, max_value=100.0, value=2.5)
     day_mins = st.number_input('Day Minutes', min_value=0, max_value=500, value=180)
     day_calls = st.number_input('Day Calls', min_value=0, max_value=100, value=40)
     day_charge = st.number_input('Day Charge', min_value=0.0, max_value=100.0, value=20.5)
