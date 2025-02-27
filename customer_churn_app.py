@@ -7,7 +7,7 @@ import numpy as np
 rf_model = joblib.load("random_forest.pkl")  
 scaler = joblib.load("scaler0.pkl")
 
-# Load dataset to get training feature names (ensure index column is not included)
+# Load dataset to get training feature names
 df = pd.read_excel("Churn (1) (2).xlsx")
 
 # Drop unnecessary columns like 'Unnamed: 0' (if exists)
@@ -23,7 +23,11 @@ training_columns = df.drop(columns=['churn']).columns
 # Function to get user input
 def get_user_input():
     st.sidebar.header("Customer Information")
-    
+
+    # State & Area Code Selection
+    state = st.sidebar.selectbox("Select State", df['state'].unique())  # Get unique states from dataset
+    area_code = st.sidebar.selectbox("Select Area Code", df['area.code'].unique())  # Get unique area codes
+
     account_length = st.sidebar.slider("Account Length (days)", 0, 365, 100)
     voice_plan = st.sidebar.selectbox("Has Voice Plan?", ["No", "Yes"])
     intl_plan = st.sidebar.selectbox("Has International Plan?", ["No", "Yes"])
@@ -34,14 +38,13 @@ def get_user_input():
     day_calls = st.sidebar.slider("Day Calls", 0, 200, 100)
     day_charge = day_mins * 0.25  # Example charge formula
     customer_calls = st.sidebar.slider("Customer Service Calls", 0, 10, 2)
-    
+
     # Convert user input into DataFrame
     user_input = pd.DataFrame({
         'state': [state],
         'area.code': [area_code],
         'account.length': [account_length],
         'voice.plan': [1 if voice_plan == 'Yes' else 0],
-        'voice.messages': [voice_messages],
         'intl.plan': [1 if intl_plan == 'Yes' else 0],
         'intl.mins': [intl_mins],
         'intl.calls': [intl_calls],
@@ -49,12 +52,6 @@ def get_user_input():
         'day.mins': [day_mins],
         'day.calls': [day_calls],
         'day.charge': [day_charge],
-        'eve.mins': [eve_mins],
-        'eve.calls': [eve_calls],
-        'eve.charge': [eve_charge],
-        'night.mins': [night_mins],
-        'night.calls': [night_calls],
-        'night.charge': [night_charge],
         'customer.calls': [customer_calls]
     })
 
