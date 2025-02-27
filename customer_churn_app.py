@@ -69,7 +69,7 @@ def get_user_input():
     # One-Hot Encoding for categorical variables
     user_input = pd.get_dummies(user_input, columns=['state', 'area.code'], drop_first=True)
 
-    # Add missing columns (Ensure alignment with training columns)
+    # Ensure all missing columns are added
     missing_cols = set(training_columns) - set(user_input.columns)
     for col in missing_cols:
         user_input[col] = 0  # Add missing columns with default value 0
@@ -79,7 +79,6 @@ def get_user_input():
 
     # Scale input data
     user_input_scaled = scaler.transform(user_input)
-
     return user_input_scaled
 
 # Streamlit UI
