@@ -1,13 +1,12 @@
 import streamlit as st
 import pandas as pd
 import joblib  # Load trained model
-import numpy as np
 
 # Load trained model & scaler
 rf_model = joblib.load("random_forest.pkl")  
 scaler = joblib.load("scaler0.pkl")
 
-# Load dataset to get training feature names
+# Load dataset to get training feature names (ensure index column is not included)
 df = pd.read_excel("Churn (1) (2).xlsx")
 
 # Drop unnecessary columns like 'Unnamed: 0' (if exists)
@@ -22,22 +21,36 @@ training_columns = df.drop(columns=['churn']).columns
 
 # Function to get user input
 def get_user_input():
-    st.sidebar.header("Customer Information")
+    with st.sidebar:
+        st.header("User Input Parameters")  # Sidebar Title
 
-    # State & Area Code Selection
-    state = st.sidebar.selectbox("Select State", df['state'].unique())  # Get unique states from dataset
-    area_code = st.sidebar.selectbox("Select Area Code", df['area.code'].unique())  # Get unique area codes
+        states = ['CA', 'NY', 'TX', 'FL', 'OH', 'MI', 'NJ', 'WA', 'VA']  # Example states
+        area_codes = [408, 415, 510, 650, 708]  # Example area codes
 
-    account_length = st.sidebar.slider("Account Length (days)", 0, 365, 100)
-    voice_plan = st.sidebar.selectbox("Has Voice Plan?", ["No", "Yes"])
-    intl_plan = st.sidebar.selectbox("Has International Plan?", ["No", "Yes"])
-    intl_mins = st.sidebar.slider("International Minutes", 0.0, 60.0, 15.0)
-    intl_calls = st.sidebar.slider("International Calls", 0, 20, 5)
-    intl_charge = intl_mins * 0.5  # Example: Charge calculation
-    day_mins = st.sidebar.slider("Day Minutes", 0.0, 400.0, 150.0)
-    day_calls = st.sidebar.slider("Day Calls", 0, 200, 100)
-    day_charge = day_mins * 0.25  # Example charge formula
-    customer_calls = st.sidebar.slider("Customer Service Calls", 0, 10, 2)
+        state = st.selectbox('State', states)
+        area_code = st.selectbox('Area Code', area_codes)
+
+        account_length = st.slider('Account Length', 1, 500, 100)
+        voice_plan = st.radio('Voice Plan', ['Yes', 'No'])
+        voice_messages = st.slider('Voice Messages', 0, 500, 10)
+        intl_plan = st.radio('International Plan', ['Yes', 'No'])
+        intl_mins = st.slider('International Minutes', 0, 500, 20)
+        intl_calls = st.slider('International Calls', 0, 100, 5)
+        intl_charge = st.slider('International Charge', 0.0, 100.0, 2.5)
+
+        day_mins = st.slider('Day Minutes', 0, 500, 180)
+        day_calls = st.slider('Day Calls', 0, 100, 40)
+        day_charge = st.slider('Day Charge', 0.0, 100.0, 20.5)
+
+        eve_mins = st.slider('Evening Minutes', 0, 500, 200)
+        eve_calls = st.slider('Evening Calls', 0, 100, 50)
+        eve_charge = st.slider('Evening Charge', 0.0, 100.0, 18.7)
+
+        night_mins = st.slider('Night Minutes', 0, 500, 250)
+        night_calls = st.slider('Night Calls', 0, 100, 60)
+        night_charge = st.slider('Night Charge', 0.0, 100.0, 15.2)
+
+        customer_calls = st.slider('Customer Calls', 0, 500, 3)
 
     # Convert user input into DataFrame
     user_input = pd.DataFrame({
@@ -45,6 +58,7 @@ def get_user_input():
         'area.code': [area_code],
         'account.length': [account_length],
         'voice.plan': [1 if voice_plan == 'Yes' else 0],
+        'voice.messages': [voice_messages],
         'intl.plan': [1 if intl_plan == 'Yes' else 0],
         'intl.mins': [intl_mins],
         'intl.calls': [intl_calls],
@@ -52,6 +66,12 @@ def get_user_input():
         'day.mins': [day_mins],
         'day.calls': [day_calls],
         'day.charge': [day_charge],
+        'eve.mins': [eve_mins],
+        'eve.calls': [eve_calls],
+        'eve.charge': [eve_charge],
+        'night.mins': [night_mins],
+        'night.calls': [night_calls],
+        'night.charge': [night_charge],
         'customer.calls': [customer_calls]
     })
 
@@ -73,11 +93,14 @@ def get_user_input():
 
 # Streamlit UI
 st.title("Customer Churn Prediction")
+st.write("Adjust the values in the **sidebar** to see predictions.")
+
 user_input_scaled = get_user_input()
 
 # Predict and display result
 prediction = int(rf_model.predict(user_input_scaled)[0])
 if prediction == 1:
-    st.write("The customer is **likely to churn**. 🚨")
+    st.write("### 🚨 The customer is **likely to churn**.")
 else:
-    st.write("The customer is **not likely to churn**. ✅")
+    st.write("### ✅ The customer is **not likely to churn**.")
+
