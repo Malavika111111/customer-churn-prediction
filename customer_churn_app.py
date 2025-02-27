@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import joblib  # Load trained model
-import numpy as np
 
 # Load trained model & scaler
 rf_model = joblib.load("random_forest.pkl")  
@@ -22,33 +21,36 @@ training_columns = df.drop(columns=['churn']).columns
 
 # Function to get user input
 def get_user_input():
-    states = ['CA', 'NY', 'TX', 'FL', 'OH', 'MI', 'NJ', 'WA', 'VA']  # Example states
-    area_codes = [408, 415, 510, 650, 708]  # Example area codes
+    with st.sidebar:
+        st.header("User Input Parameters")  # Sidebar Title
 
-    state = st.selectbox('State', states)
-    area_code = st.selectbox('Area Code', area_codes)
+        states = ['CA', 'NY', 'TX', 'FL', 'OH', 'MI', 'NJ', 'WA', 'VA']  # Example states
+        area_codes = [408, 415, 510, 650, 708]  # Example area codes
 
-    account_length = st.select_slider('Account Length', options=range(1, 501), value=100)
-    voice_plan = st.selectbox('Voice Plan', ['Yes', 'No'])
-    voice_messages = st.select_slider('Voice Messages', options=range(0, 501), value=10)
-    intl_plan = st.selectbox('International Plan', ['Yes', 'No'])
-    intl_mins = st.select_slider('International Minutes', options=range(0, 501), value=20)
-    intl_calls = st.select_slider('International Calls', options=range(0, 101), value=5)
-    intl_charge = st.select_slider('International Charge', options=[round(i * 0.1, 1) for i in range(0, 1001)], value=2.5)
+        state = st.selectbox('State', states)
+        area_code = st.selectbox('Area Code', area_codes)
 
-    day_mins = st.select_slider('Day Minutes', options=range(0, 501), value=180)
-    day_calls = st.select_slider('Day Calls', options=range(0, 101), value=40)
-    day_charge = st.select_slider('Day Charge', options=[round(i * 0.1, 1) for i in range(0, 1001)], value=20.5)
+        account_length = st.slider('Account Length', 1, 500, 100)
+        voice_plan = st.radio('Voice Plan', ['Yes', 'No'])
+        voice_messages = st.slider('Voice Messages', 0, 500, 10)
+        intl_plan = st.radio('International Plan', ['Yes', 'No'])
+        intl_mins = st.slider('International Minutes', 0, 500, 20)
+        intl_calls = st.slider('International Calls', 0, 100, 5)
+        intl_charge = st.slider('International Charge', 0.0, 100.0, 2.5)
 
-    eve_mins = st.select_slider('Evening Minutes', options=range(0, 501), value=200)
-    eve_calls = st.select_slider('Evening Calls', options=range(0, 101), value=50)
-    eve_charge = st.select_slider('Evening Charge', options=[round(i * 0.1, 1) for i in range(0, 1001)], value=18.7)
+        day_mins = st.slider('Day Minutes', 0, 500, 180)
+        day_calls = st.slider('Day Calls', 0, 100, 40)
+        day_charge = st.slider('Day Charge', 0.0, 100.0, 20.5)
 
-    night_mins = st.select_slider('Night Minutes', options=range(0, 501), value=250)
-    night_calls = st.select_slider('Night Calls', options=range(0, 101), value=60)
-    night_charge = st.select_slider('Night Charge', options=[round(i * 0.1, 1) for i in range(0, 1001)], value=15.2)
+        eve_mins = st.slider('Evening Minutes', 0, 500, 200)
+        eve_calls = st.slider('Evening Calls', 0, 100, 50)
+        eve_charge = st.slider('Evening Charge', 0.0, 100.0, 18.7)
 
-    customer_calls = st.select_slider('Customer Calls', options=range(0, 501), value=3)
+        night_mins = st.slider('Night Minutes', 0, 500, 250)
+        night_calls = st.slider('Night Calls', 0, 100, 60)
+        night_charge = st.slider('Night Charge', 0.0, 100.0, 15.2)
+
+        customer_calls = st.slider('Customer Calls', 0, 500, 3)
 
     # Convert user input into DataFrame
     user_input = pd.DataFrame({
@@ -91,11 +93,14 @@ def get_user_input():
 
 # Streamlit UI
 st.title("Customer Churn Prediction")
+st.write("Adjust the values in the **sidebar** to see predictions.")
+
 user_input_scaled = get_user_input()
 
 # Predict and display result
 prediction = int(rf_model.predict(user_input_scaled)[0])
 if prediction == 1:
-    st.write("The customer is **likely to churn**. 🚨")
+    st.write("### 🚨 The customer is **likely to churn**.")
 else:
-    st.write("The customer is **not likely to churn**. ✅")
+    st.write("### ✅ The customer is **not likely to churn**.")
+
