@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import joblib  # Load trained model
+import numpy as np
 
 # Load trained model & scaler
 rf_model = joblib.load("random_forest.pkl")  
@@ -21,48 +22,33 @@ training_columns = df.drop(columns=['churn']).columns
 
 # Function to get user input
 def get_user_input():
-    with st.sidebar:
-    st.header("User Input Features")
-    st.markdown("<div style='height: 600px; overflow-y: auto;'>", unsafe_allow_html=True)
+    states = ['CA', 'NY', 'TX', 'FL', 'OH', 'MI', 'NJ', 'WA', 'VA']  # Example states
+    area_codes = [408, 415, 510, 650, 708]  # Example area codes
 
-    state = st.selectbox('State', ['CA', 'NY', 'TX', 'FL'])  # Example states
-    area_code = st.number_input('Area Code', min_value=100, max_value=999, step=1, value=408)
-    account_length = st.number_input('Account Length', min_value=1, max_value=500, value=100)
+    state = st.selectbox('State', states)
+    area_code = st.selectbox('Area Code', area_codes)
 
-    # Plans
-    st.subheader("Plans")
+    account_length = st.selectbox('Account Length', list(range(1, 501)), index=99)
     voice_plan = st.selectbox('Voice Plan', ['Yes', 'No'])
+    voice_messages = st.selectbox('Voice Messages', list(range(0, 501)), index=10)
     intl_plan = st.selectbox('International Plan', ['Yes', 'No'])
+    intl_mins = st.selectbox('International Minutes', list(range(0, 501)), index=20)
+    intl_calls = st.selectbox('International Calls', list(range(0, 101)), index=5)
+    intl_charge = st.selectbox('International Charge', [round(i * 0.1, 1) for i in range(0, 1001)], index=25)
 
-    # International Usage
-    st.subheader("International Usage")
-    intl_mins = st.number_input('International Minutes', min_value=0, max_value=500, value=20)
-    intl_calls = st.number_input('International Calls', min_value=0, max_value=100, value=5)
-    intl_charge = st.number_input('International Charge', min_value=0.0, max_value=100.0, value=2.5)
+    day_mins = st.selectbox('Day Minutes', list(range(0, 501)), index=180)
+    day_calls = st.selectbox('Day Calls', list(range(0, 101)), index=40)
+    day_charge = st.selectbox('Day Charge', [round(i * 0.1, 1) for i in range(0, 1001)], index=205)
 
-    # Day Usage
-    st.subheader("Day Usage")
-    day_mins = st.number_input('Day Minutes', min_value=0, max_value=500, value=180)
-    day_calls = st.number_input('Day Calls', min_value=0, max_value=100, value=40)
-    day_charge = st.number_input('Day Charge', min_value=0.0, max_value=100.0, value=20.5)
+    eve_mins = st.selectbox('Evening Minutes', list(range(0, 501)), index=200)
+    eve_calls = st.selectbox('Evening Calls', list(range(0, 101)), index=50)
+    eve_charge = st.selectbox('Evening Charge', [round(i * 0.1, 1) for i in range(0, 1001)], index=187)
 
-    # Evening Usage
-    st.subheader("Evening Usage")
-    eve_mins = st.number_input('Evening Minutes', min_value=0, max_value=500, value=200)
-    eve_calls = st.number_input('Evening Calls', min_value=0, max_value=100, value=50)
-    eve_charge = st.number_input('Evening Charge', min_value=0.0, max_value=100.0, value=18.7)
+    night_mins = st.selectbox('Night Minutes', list(range(0, 501)), index=250)
+    night_calls = st.selectbox('Night Calls', list(range(0, 101)), index=60)
+    night_charge = st.selectbox('Night Charge', [round(i * 0.1, 1) for i in range(0, 1001)], index=152)
 
-    # Night Usage
-    st.subheader("Night Usage")
-    night_mins = st.number_input('Night Minutes', min_value=0, max_value=500, value=250)
-    night_calls = st.number_input('Night Calls', min_value=0, max_value=100, value=60)
-    night_charge = st.number_input('Night Charge', min_value=0.0, max_value=100.0, value=15.2)
-
-    # Customer Service Calls
-    customer_calls = st.number_input('Customer Service Calls', min_value=0, max_value=500, value=3)
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
+    customer_calls = st.selectbox('Customer Calls', list(range(0, 501)), index=3)
 
     # Convert user input into DataFrame
     user_input = pd.DataFrame({
@@ -105,14 +91,11 @@ def get_user_input():
 
 # Streamlit UI
 st.title("Customer Churn Prediction")
-st.write("Adjust the values in the **sidebar** to see predictions.")
-
 user_input_scaled = get_user_input()
 
 # Predict and display result
 prediction = int(rf_model.predict(user_input_scaled)[0])
 if prediction == 1:
-    st.write("### 🚨 The customer is **likely to churn**.")
+    st.write("The customer is **likely to churn**. 🚨")
 else:
-    st.write("### ✅ The customer is **not likely to churn**.")
-
+    st.write("The customer is **not likely to churn**. ✅")
