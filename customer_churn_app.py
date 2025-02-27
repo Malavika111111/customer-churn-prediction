@@ -22,35 +22,47 @@ training_columns = df.drop(columns=['churn']).columns
 # Function to get user input
 def get_user_input():
     with st.sidebar:
-        st.header("User Input Parameters")  # Sidebar Title
+    st.header("User Input Features")
+    st.markdown("<div style='height: 600px; overflow-y: auto;'>", unsafe_allow_html=True)
 
-        states = ['CA', 'NY', 'TX', 'FL', 'OH', 'MI', 'NJ', 'WA', 'VA']  # Example states
-        area_codes = [408, 415, 510, 650, 708]  # Example area codes
+    state = st.selectbox('State', ['CA', 'NY', 'TX', 'FL'])  # Example states
+    area_code = st.number_input('Area Code', min_value=100, max_value=999, step=1, value=408)
+    account_length = st.number_input('Account Length', min_value=1, max_value=500, value=100)
 
-        state = st.selectbox('State', states)
-        area_code = st.selectbox('Area Code', area_codes)
+    # Plans
+    st.subheader("Plans")
+    voice_plan = st.selectbox('Voice Plan', ['Yes', 'No'])
+    intl_plan = st.selectbox('International Plan', ['Yes', 'No'])
 
-        account_length = st.slider('Account Length', 1, 500, 100)
-        voice_plan = st.radio('Voice Plan', ['Yes', 'No'])
-        voice_messages = st.slider('Voice Messages', 0, 500, 10)
-        intl_plan = st.radio('International Plan', ['Yes', 'No'])
-        intl_mins = st.slider('International Minutes', 0, 500, 20)
-        intl_calls = st.slider('International Calls', 0, 100, 5)
-        intl_charge = st.slider('International Charge', 0.0, 100.0, 2.5)
+    # International Usage
+    st.subheader("International Usage")
+    intl_mins = st.number_input('International Minutes', min_value=0, max_value=500, value=20)
+    intl_calls = st.number_input('International Calls', min_value=0, max_value=100, value=5)
+    intl_charge = st.number_input('International Charge', min_value=0.0, max_value=100.0, value=2.5)
 
-        day_mins = st.slider('Day Minutes', 0, 500, 180)
-        day_calls = st.slider('Day Calls', 0, 100, 40)
-        day_charge = st.slider('Day Charge', 0.0, 100.0, 20.5)
+    # Day Usage
+    st.subheader("Day Usage")
+    day_mins = st.number_input('Day Minutes', min_value=0, max_value=500, value=180)
+    day_calls = st.number_input('Day Calls', min_value=0, max_value=100, value=40)
+    day_charge = st.number_input('Day Charge', min_value=0.0, max_value=100.0, value=20.5)
 
-        eve_mins = st.slider('Evening Minutes', 0, 500, 200)
-        eve_calls = st.slider('Evening Calls', 0, 100, 50)
-        eve_charge = st.slider('Evening Charge', 0.0, 100.0, 18.7)
+    # Evening Usage
+    st.subheader("Evening Usage")
+    eve_mins = st.number_input('Evening Minutes', min_value=0, max_value=500, value=200)
+    eve_calls = st.number_input('Evening Calls', min_value=0, max_value=100, value=50)
+    eve_charge = st.number_input('Evening Charge', min_value=0.0, max_value=100.0, value=18.7)
 
-        night_mins = st.slider('Night Minutes', 0, 500, 250)
-        night_calls = st.slider('Night Calls', 0, 100, 60)
-        night_charge = st.slider('Night Charge', 0.0, 100.0, 15.2)
+    # Night Usage
+    st.subheader("Night Usage")
+    night_mins = st.number_input('Night Minutes', min_value=0, max_value=500, value=250)
+    night_calls = st.number_input('Night Calls', min_value=0, max_value=100, value=60)
+    night_charge = st.number_input('Night Charge', min_value=0.0, max_value=100.0, value=15.2)
 
-        customer_calls = st.slider('Customer Calls', 0, 500, 3)
+    # Customer Service Calls
+    customer_calls = st.number_input('Customer Service Calls', min_value=0, max_value=500, value=3)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
     # Convert user input into DataFrame
     user_input = pd.DataFrame({
