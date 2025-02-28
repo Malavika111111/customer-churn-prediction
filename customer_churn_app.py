@@ -100,30 +100,3 @@ if prediction == 1:
     st.write("The customer is **likely to churn**.")
 else:
     st.write("The customer is **not likely to churn**.")
-
-# Feature Importance Visualization
-st.subheader("Feature Importance in Prediction")
-
-# SHAP Explanation
-explainer = shap.TreeExplainer(rf_model)  # Explainer for Random Forest
-shap_values = explainer.shap_values(user_input_scaled)
-
-# SHAP Summary Plot
-st.set_option('deprecation.showPyplotGlobalUse', False)
-plt.figure(figsize=(10, 6))
-shap.summary_plot(shap_values, user_input, feature_names=training_columns)
-st.pyplot()
-
-# Top Factors Bar Plot
-st.subheader("Top Factors Influencing This Prediction")
-
-# Get absolute SHAP values for sorting
-shap_abs = np.abs(shap_values[0])
-top_features = np.argsort(shap_abs)[-5:]  # Get top 5 influencing features
-
-plt.figure(figsize=(8, 5))
-plt.barh(np.array(training_columns)[top_features], shap_abs[top_features], color="royalblue")
-plt.xlabel("Impact on Prediction")
-plt.ylabel("Feature")
-plt.title("Top 5 Features Affecting Churn Decision")
-st.pyplot()
