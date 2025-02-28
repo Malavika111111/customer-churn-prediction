@@ -77,13 +77,11 @@ def get_user_input():
     # Applying One-Hot Encoding to ensure it matches training data
     user_input = pd.get_dummies(user_input, columns = ['state', 'area.code'], drop_first=True)
 
-    # Add missing columns if any
-    missing_cols = set(training_columns) - set(user_input.columns)
-    for col in missing_cols:
-        user_input[col] = 0  # Adding the missing feature columns with 0
+    # Fill missing numerical values with mean and categorical (one-hot) values with 0
+    user_input = user_input.fillna(df.mean(numeric_only=True)).fillna(0)
 
-    # Ensure column order matches training data
-    user_input = user_input.reindex(columns = training_columns, fill_value=0)
+    # Reindex to ensure all training columns exist
+    user_input = user_input.reindex(columns = training_columns)
 
     # Convert DataFrame to NumPy array for scaling
     user_input_scaled = scaler.transform(user_input)
