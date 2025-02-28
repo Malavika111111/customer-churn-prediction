@@ -94,11 +94,11 @@ st.write("Adjust the values in the **sidebar** to see predictions.")
 # Calling the function get_user_input() to get user input
 user_input_scaled = get_user_input()
 
-# **Button to trigger prediction**
+# Button to trigger the prediction
 if st.button("Predict Churn"):
-    # Predict and display the result
+    # Predicting and displaying the result
     prediction = int(rf_model.predict(user_input_scaled)[0])
     if prediction == 1:
-        st.error("⚠️ The customer is **likely to churn**.")
+        st.error("The customer is **likely to churn**.")
     else:
-        st.success("✅ The customer is **not likely to churn**.")
+        st.success("The customer is **not likely to churn**.")
