@@ -91,9 +91,10 @@ def get_user_input():
 st.title("Customer Churn Prediction")
 st.write("Adjust the values in the **sidebar** to see predictions.")
 
+# Calling the function get_user_input()
 user_input_scaled = get_user_input()
 
-# Predict and displaying the result
+# Predicting and displaying the result
 prediction = int(rf_model.predict(user_input_scaled)[0])
 if prediction == 1:
     st.write("The customer is **likely to churn**.")
