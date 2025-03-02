@@ -13,8 +13,7 @@ df = pd.read_excel("Churn (1) (2).xlsx")
 if 'Unnamed: 0' in df.columns:
     df = df.drop(columns=['Unnamed: 0'])
 
-# Applying the One-Hot Encoding same as training
-df = pd.get_dummies(df, columns=['state', 'area.code'], drop_first=True)
+
 
 # Store feature names used in training
 training_columns = df.drop(columns=['churn']).columns
